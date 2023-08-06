@@ -1,0 +1,38 @@
+#!/bin/zsh
+
+API_KEY=$(cat weather/weather_api_key.txt)
+
+get_weather() {
+  local zipcode=$1
+  # Make the API call using curl
+  curl --request GET \
+    --url "https://us-weather-by-zip-code.p.rapidapi.com/getweatherzipcode?zip=$zipcode" \
+    --header 'X-RapidAPI-Host: us-weather-by-zip-code.p.rapidapi.com' \
+    --header "X-RapidAPI-Key: $API_KEY"
+}
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    --zipcode)
+      zipcode="$2"
+      shift
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
+# Check if the --zipcode argument was provided
+if [[ -z $zipcode ]]; then
+  echo "Please provide a zipcode using --zipcode argument."
+  exit 1
+fi
+
+# Call the get_weather function with the provided zipcode
+get_weather "$zipcode"
